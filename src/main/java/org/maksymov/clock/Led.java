@@ -22,9 +22,6 @@ public class Led {
 
     @Override
     public String toString() {
-        if (turnedOn) {
-            return color.toString();
-        }
-        return "O";
+        return  turnedOn ? color.toString() : "O";
     }
 }

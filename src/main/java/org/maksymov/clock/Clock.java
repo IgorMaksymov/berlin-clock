@@ -6,7 +6,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Set;
-import java.util.function.IntSupplier;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
@@ -25,18 +24,18 @@ public class Clock {
 
     private final List<Led> fiveMinutesMarkerRow;
 
-    private final List<Led> minutesMarkingRow;
+    private final List<Led> minutesMarkerRow;
 
     private Clock(final Led evenSecondMarker,
                  final List<Led> fiveHoursMarkerRow,
                  final List<Led> hoursMarkerRow,
                  final List<Led> fiveMinutesMarkerRow,
-                 final List<Led> minutesMarkingRow) {
+                 final List<Led> minutesMarkerRow) {
         this.evenSecondMarker     = requireNonNull(evenSecondMarker);
         this.fiveHoursMarkerRow   = requireNonNull(fiveHoursMarkerRow);
         this.hoursMarkerRow       = requireNonNull(hoursMarkerRow);
         this.fiveMinutesMarkerRow = requireNonNull(fiveMinutesMarkerRow);
-        this.minutesMarkingRow    = requireNonNull(minutesMarkingRow);
+        this.minutesMarkerRow     = requireNonNull(minutesMarkerRow);
     }
 
     public static Clock from(final String time) {
@@ -61,12 +60,12 @@ public class Clock {
     }
 
     private static List<Led> createFiveHoursMarkerRow(final int timeValue) {
-        final List<Led> fiveHoursMarkerRow = createLedRowAndSwitchOnByTimeValue(RED, () -> timeValue / 5);
+        final List<Led> fiveHoursMarkerRow = createLedRowAndSwitchOnByTimeValue(RED, timeValue / 5);
         return fiveHoursMarkerRow;
     }
 
     private static List<Led> createHoursMarkerRow(final int timeValue) {
-        final List<Led> hoursMarkerRow = createLedRowAndSwitchOnByTimeValue(RED, () -> timeValue % 5);
+        final List<Led> hoursMarkerRow = createLedRowAndSwitchOnByTimeValue(RED, timeValue % 5);
         return hoursMarkerRow;
     }
 
@@ -87,15 +86,14 @@ public class Clock {
     }
 
     private static List<Led> createMinutesMarkingRowMarkerRow(final int timeValue) {
-        final List<Led> minutesMarkingRow = createLedRowAndSwitchOnByTimeValue(YELLOW, () -> timeValue % 5);
+        final List<Led> minutesMarkingRow = createLedRowAndSwitchOnByTimeValue(YELLOW, timeValue % 5);
         return minutesMarkingRow;
     }
 
-    private static List<Led> createLedRowAndSwitchOnByTimeValue(final Color color, IntSupplier amountToSwitch) {
-        final int numberOfActiveLed = amountToSwitch.getAsInt();
+    private static List<Led> createLedRowAndSwitchOnByTimeValue(final Color color, int amountToSwitch) {
         final long sizeOfRow = 4;
         final List<Led> ledRow = Collections.unmodifiableList(Stream.generate(() -> new Led(color)).limit(sizeOfRow).collect(Collectors.toList()));
-        IntStream.range(0, numberOfActiveLed).forEach(i -> ledRow.get(i).turnOn());
+        IntStream.range(0, amountToSwitch).forEach(i -> ledRow.get(i).turnOn());
         return ledRow;
     }
 
@@ -106,6 +104,6 @@ public class Clock {
               fiveHoursMarkerRow.stream().map(Led::toString).collect(Collectors.joining())   + "\n" +
               hoursMarkerRow.stream().map(Led::toString).collect(Collectors.joining())       + "\n" +
               fiveMinutesMarkerRow.stream().map(Led::toString).collect(Collectors.joining()) + "\n" +
-              minutesMarkingRow.stream().map(Led::toString).collect(Collectors.joining());
+              minutesMarkerRow.stream().map(Led::toString).collect(Collectors.joining());
     }
 }
